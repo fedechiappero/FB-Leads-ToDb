@@ -1,17 +1,27 @@
 from openpyxl import load_workbook
 import sys
 from termcolor import colored
+import argparse
+
+parser = argparse.ArgumentParser(description='Generate insert queries from a xlsx file')
+parser.add_argument('-f', '--file', help='xlsx file path')
+parser.add_argument('-c', '--comment', help='Comment for records to insert')
+args = parser.parse_args()
 
 try:
-    file = sys.argv[1]
-except:
-    print(colored('No igreso la ruta al archivo xlsx.', 'red'), 'Ej:')
-    print(r'python leadsToDb.py C:\leads.xlsx')
+    file = args.file
+    if(file == None):
+        raise Exception('Provide a path for xlsx file.')
+
+    comment = args.comment
+    if(comment == None):
+        raise Exception('Provide a comment for records to insert.')
+except Exception as e:
+    print(colored(e, 'red'), f'Run {sys.argv[0]} -h for help')
     exit()
 
 data = load_workbook(file)
 dataSetLen = data['Datos'].max_row
-comment = 'Importación manual desde Lead de Facebook 22/06'
 insertContact = 'insert into contact (`name`, lastname, email, cellphone, id_cms_users, id_status, comments, created_at, updated_at) values ('
 insertActivity = 'insert into activity (created_at, updated_at, id_contact, id_activity_type) values ('
 
@@ -41,4 +51,4 @@ for row in rowsActivity:
 
 data.save(file)
 
-print(colored('Exito!', 'green'))
+print(colored('Success!', 'green'))
