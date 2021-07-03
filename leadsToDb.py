@@ -21,14 +21,14 @@ except Exception as e:
     exit()
 
 data = load_workbook(file)
-dataSetLen = data['Datos'].max_row
+dataSetLen = data.worksheets[0].max_row
 insertContact = 'insert into contact (`name`, lastname, email, cellphone, id_cms_users, id_status, comments, created_at, updated_at) values ('
 insertActivity = 'insert into activity (created_at, updated_at, id_contact, id_activity_type) values ('
 
 rowsContact = []
 rowsActivity = []
 
-for row in data['Datos'].iter_rows(min_row=2):
+for row in data.worksheets[0].iter_rows(min_row=2):
     lastName = row[12].value.split()[len(row[12].value.split())-1]
     name = row[12].value if lastName == row[12].value else row[12].value.replace(lastName, '')
     email = row[14].value
@@ -38,7 +38,7 @@ for row in data['Datos'].iter_rows(min_row=2):
     cmsUser = '27' if row[12].row < dataSetLen/2 else '44'
     rowsContact.append((insertContact,f"'{name}',", f"'{lastName}',", f"'{email}',", f"'{phone}',", f"'{cmsUser}',", "'1',", f"'{comment}',", "now(),", "now())",";"))
         
-for row in data['Datos'].iter_rows(min_row=2):
+for row in data.worksheets[0].iter_rows(min_row=2):
     rowsActivity.append((insertActivity,"now(),", "now(),","", ",'1')",";"))
 
 sqlContact = data.create_sheet("Sql - Contact")
